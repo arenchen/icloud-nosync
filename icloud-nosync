@@ -1,0 +1,19 @@
+#!/bin/bash
+
+LASTDIR=""
+
+# Node igrone node_modules
+
+find ** -type d -iname 'node_modules' | while read LINE
+do
+  REALPATH=`realpath "$LINE"`
+  if [[ $REALPATH != *".nosync"* ]] && [[ -z "$LASTDIR" || $REALPATH != ${LASTDIR}* ]]
+  then
+    LASTDIR=$REALPATH
+    mv "$REALPATH" "${REALPATH}.nosync"
+    SOURCE=`realpath ${REALPATH}.nosync`
+    TARGET=`realpath $REALPATH`
+    ln -s "$SOURCE" "$TARGET"
+    echo "$SOURCE <-> $TARGET"
+  fi
+done
